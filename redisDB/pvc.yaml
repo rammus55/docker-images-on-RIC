@@ -11,5 +11,5 @@ spec:
     accessModes:
             - ReadWriteOnce
     hostPath:
-        path: "/home/lienlab305/work/III/Near-RT\ RIC\ and\ WBT/RIC\ component/rountingDB/rountingDBdata"
+        path: "/home/test/Near-RT-RIC-test/redisDB/redisDBdata"
         
