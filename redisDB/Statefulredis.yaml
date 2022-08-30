@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: "redis"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      # hostNetwork: true
+      containers:
+      - name: redis
+        image: redis:6.0.9
+        command: ["redis-server", "--appendonly", "yes", '--port', '6380']
+        ports:
+        - containerPort: 6380
+          name: web
+        volumeMounts:
+        - name: redis-aof
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-aof
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "gp2"
+      resources:
+        requests:
+          storage: 20Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  # clusterIP: 10.98.2.0
+  ports:
+  - port: 6380
+    name: web
+  # 這邊跟一般 service 不同的重點在這，要把 clusterIP 設定為 None
+  clusterIP: None
+  selector:
+    app: redis
+
